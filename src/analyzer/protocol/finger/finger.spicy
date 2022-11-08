@@ -1,0 +1,55 @@
+# Copyright (c) 2021 by the Zeek Project. See LICENSE for details.
+
+module Finger;
+
+#import zeek;
+
+const OptionalWhiteSpace = /[ \t]*/;
+const WhiteSpace = /[ \t]+/;
+const NewLine    = /\r?\n/;
+const RestOfLine = /[^\r\n]*/;
+
+public type Request  = unit {
+    : OptionalWhiteSpace;
+    switch {
+        -> : /\/W/ { self.whois = True; }
+        -> void;
+    };
+    : OptionalWhiteSpace;
+
+    arg: RestOfLine &convert=$$.strip().split1(b"@") {
+        if ( |self.arg[1]| == 0  ) {
+            self.user = self.arg[0];
+            self.host = self.arg[1];
+        }
+        else
+            self.host = self.arg[0];
+    }
+
+    on %done {
+#zeek.confirm_protocol();
+    }
+
+    on %error {
+#zeek.reject_protocol("cannot parse request line");
+    }
+
+    var user: bytes;
+    var host: bytes;
+    var whois: bool = False;
+};
+
+type ReplyLine = unit {
+    data: RestOfLine &convert=$$.strip();
+    : NewLine;
+};
+
+public type Reply  = unit {
+    : ReplyLine[];
+
+    on %error {
+#zeek.reject_protocol("cannot parse reply line");
+    }
+
+};
+

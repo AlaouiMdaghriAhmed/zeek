@@ -1,0 +1,23 @@
+# Copyright (c) 2021 by the Zeek Project. See LICENSE for details.
+
+protocol analyzer Syslog over UDP:
+    parse with Syslog::Message;
+
+import Syslog;
+
+## Generated for monitored Syslog messages.
+##
+## See `Wikipedia <http://en.wikipedia.org/wiki/Syslog>`__ for more
+## information about the Syslog protocol.
+##
+## c: The connection record for the underlying transport-layer session/flow.
+##
+## facility: The "facility" included in the message.
+##
+## severity: The "severity" included in the message.
+##
+## msg: The message logged.
+##
+## .. note:: Zeek currently parses only UDP syslog traffic. Support for TCP
+##    syslog will be added soon.
+on Syslog::Message -> event syslog_message($conn, self.facility, self.severity, self.msg);

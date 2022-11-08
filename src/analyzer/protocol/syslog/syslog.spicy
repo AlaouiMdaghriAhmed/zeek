@@ -1,0 +1,28 @@
+# Copyright (c) 2021 by the Zeek Project. See LICENSE for details.
+
+module Syslog;
+
+public type Message = unit {
+    switch {
+        -> prio: Priority;
+        -> void;
+    };
+
+    msg: bytes &eod;
+
+    var severity: uint64 = 999;
+    var facility: uint64 = 999;
+
+    on %done {
+        if ( self?.prio ) {
+            self.severity = (self.prio.value & 0x07);
+            self.facility = (self.prio.value &0x03f8) >> 3;
+        }
+    }
+};
+
+type Priority = unit {
+    : b"<";
+    value: /[[:digit:]]+/ &convert=$$.to_uint();
+    : b">";
+};

@@ -1,0 +1,46 @@
+# Copyright (c) 2021 by the Zeek Project. See LICENSE for details.
+
+protocol analyzer Finger over TCP:
+    parse originator with Finger::Request,
+    parse responder with Finger::Reply,
+    port 79/tcp;
+
+import Finger;
+
+## Generated for Finger requests.
+##
+## See `Wikipedia <http://en.wikipedia.org/wiki/Finger_protocol>`__ for more
+## information about the Finger protocol.
+##
+## c: The connection.
+##
+## full: True if verbose information is requested (``/W`` switch).
+##
+## username: The request's user name.
+##
+## hostname: The request's host name.
+##
+## .. zeek:see:: finger_reply
+##
+## .. todo:: Zeek's current default configuration does not activate the protocol
+##    analyzer that generates this event; the corresponding script has not yet
+##    been ported. To still enable this event, one needs to
+##    register a port for it or add a DPD payload signature.
+on Finger::Request -> event finger_request($conn, self.whois, self.user, self.host);
+
+## Generated for Finger replies.
+##
+## See `Wikipedia <http://en.wikipedia.org/wiki/Finger_protocol>`__ for more
+## information about the Finger protocol.
+##
+## c: The connection.
+##
+## reply_line: The reply as returned by the server
+##
+## .. zeek:see:: finger_request
+##
+## .. todo:: Zeek's current default configuration does not activate the protocol
+##    analyzer that generates this event; the corresponding script has not yet
+##    been ported. To still enable this event, one needs to
+##    register a port for it or add a DPD payload signature.
+on Finger::ReplyLine -> event finger_reply($conn, self.data);
