@@ -1,6 +1,6 @@
 # When changing the minimum version here, also adapt
 # auxil/zeek-aux/plugin-support/skeleton/CMakeLists.txt
-cmake_minimum_required(VERSION 3.15.0 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.13.0 FATAL_ERROR)
 
 if ( WIN32 )
     # Enable usage of CMAKE_MSVC_RUNTIME_LIBRARY variable
